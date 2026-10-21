@@ -1,5 +1,7 @@
 """End-to-end check against a running service.
-Usage: python scripts/smoke_test.py https://your-app.onrender.com
+Usage:   python scripts/smoke_test.py https://your-app.onrender.com
+Example: python scripts/smoke_test.py https://txn-webhook-service-kr2w.onrender.com
+Default (no argument): http://localhost:8000
 """
 
 import json, sys, time, uuid, urllib.request, urllib.error
