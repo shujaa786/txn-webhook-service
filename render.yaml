@@ -1,12 +1,13 @@
-# Render Blueprint: New + > Blueprint > pick this repo. Creates the web service and the Postgres DB.
 databases:
   - name: txn-db
     plan: free
+    region: singapore
 services:
   - type: web
     name: txn-webhook-service
     runtime: docker
     plan: free
+    region: singapore
     healthCheckPath: /
     envVars:
       - key: DATABASE_URL

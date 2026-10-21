@@ -7,10 +7,13 @@ from decimal import Decimal
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-
+import time
+from fastapi import Request
 from . import db, worker
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
 log = logging.getLogger("api")
 
 
@@ -28,6 +31,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Transaction Webhook Service", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def add_process_time(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    response.headers["X-Process-Time-Ms"] = (
+        f"{(time.perf_counter() - start) * 1000:.1f}"
+    )
+    return response
 
 
 class TransactionWebhook(BaseModel):
@@ -54,7 +67,9 @@ async def receive_webhook(payload: TransactionWebhook):
     except Exception:
         # Not durably stored -> tell the sender to retry rather than silently dropping it.
         log.exception("failed to persist webhook %s", payload.transaction_id)
-        return JSONResponse({"status": "unavailable"}, status_code=503, headers={"Retry-After": "5"})
+        return JSONResponse(
+            {"status": "unavailable"}, status_code=503, headers={"Retry-After": "5"}
+        )
     return {"status": "accepted", "duplicate": not created}
 
 
