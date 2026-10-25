@@ -4,7 +4,7 @@ Receives payment-processor webhooks, acknowledges instantly (`202`), and process
 in the background (30s simulated external call), with idempotency and crash-safe persistence.
 
 **Live URL:** https://txn-webhook-service-kr2w.onrender.com/
-
+**ARCHITECTURE  [`ARCHITECTURE.md`](ARCHITECTURE.md)
 ## Endpoints
 
 | Method | Path | Description |
